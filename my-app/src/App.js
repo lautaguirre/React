@@ -21,29 +21,6 @@ class Formatteddate extends Component{
   }
 }
 
-//Conditional rendering
-class UserGreeting extends Component {
-  render(){
-    return <h1>Welcome back!</h1>;
-  }
-}
-
-class GuestGreeting extends Component {
-  render(){
-    return <h1>Please sign up.</h1>;
-  }
-}
-
-class Greeting extends Component{
-  render(){
-    if(this.props.isLoggedIn){
-      return <UserGreeting />;
-    }else{
-      return <GuestGreeting />;
-    }
-  }
-}
-
 //Toggle comp
 class Toggle extends Component{
   constructor(props){
@@ -108,6 +85,146 @@ class Clock extends Component{
   }
 }
 
+//Conditional rendering
+class UserGreeting extends Component {
+  render(){
+    return <h1>Welcome back!</h1>;
+  }
+}
+
+class GuestGreeting extends Component {
+  render(){
+    return <h1>Please sign up.</h1>;
+  }
+}
+
+class Greeting extends Component{
+  render(){
+    if(this.props.isLoggedIn){
+      return <UserGreeting />;
+    }else{
+      return <GuestGreeting />;
+    }
+  }
+}
+
+class LoginButton extends Component {
+
+  render(){
+    return(
+      <button onClick = {this.props.onClick}>
+        Login
+      </button>
+    );
+  }
+
+} 
+
+class LogoutButton extends Component {
+
+  render(){
+    return(
+      <button onClick = {this.props.onClick}>
+        Logout
+      </button>
+    );
+  }
+
+}
+
+class LoginControl extends Component {
+  constructor(props){
+    super(props);
+    
+    this.handleLoginClick = this.handleLoginClick.bind(this);
+    this.handleLogoutClick = this.handleLogoutClick.bind(this);
+    this.state = {isLoggedIn: false};
+  }
+
+  handleLoginClick(){
+    this.setState({isLoggedIn: true});
+  }
+
+  handleLogoutClick(){
+    this.setState({isLoggedIn: false});
+  }
+
+  render(){
+    let button = null;
+
+    if(this.state.isLoggedIn){
+      button = <LogoutButton onClick = {this.handleLogoutClick} />;
+    }else{
+      button = <LoginButton onClick = {this.handleLoginClick} />;
+    }
+    
+    return(
+      <div>
+        <Greeting isLoggedIn = {this.state.isLoggedIn} />
+        {button}
+      </div>
+    );
+  }
+}
+
+//Prevent comp from rendering 
+class Warning extends Component {
+  render(){
+    if(!this.props.warn){
+      return null;
+    }else{
+      return (
+        <div className='warning'>
+          <h4>Warning!</h4>
+        </div>
+      );
+    }
+  }
+}
+
+class Page extends Component {
+  constructor(props){
+    super(props);
+    this.state = {showWarning : true};
+    this.handleToggleClick = this.handleToggleClick.bind(this);
+  }
+
+  handleToggleClick(){
+    this.setState(prevState => ({
+      showWarning: !prevState.showWarning
+    }));
+  }
+
+  render(){
+    return (
+      <div>
+        <Warning warn = {this.state.showWarning} />
+        <button onClick = {this.handleToggleClick}>
+          {this.state.showWarning ? 'Desactivar':'Activar'}
+        </button>
+      </div>
+    );
+  }
+}
+
+//Lists and keys
+class List extends Component {
+
+  render(){
+    //This const could be inline at return
+    const listItems = this.props.numbers.map((number) => //Copy and modify each array element
+      <li key = {number.toString()}> 
+        {number}
+      </li>
+    );
+    return (
+      <ul>{listItems}</ul>
+    );
+  }
+
+}
+const numbers = [1,2,3,4,5];
+
 class App extends Component {
   render() {
     return (
@@ -121,7 +238,9 @@ class App extends Component {
         </p>
         {elem} 
         <Toggle />
-        <Greeting isLoggedIn = {true}/>
+        <LoginControl />
+        <Page />
+        <List numbers={numbers}/>
       </div>
     );
   }
