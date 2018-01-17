@@ -10,7 +10,7 @@ class Welcome extends Component{
 }
 
 //JSX var
-const elem=<Welcome name='Juan' />;
+const elem=<Welcome name='Nombre' />;
 
 //Date comp
 class Formatteddate extends Component{
@@ -217,6 +217,7 @@ class List extends Component {
         {number}
       </li>
     );
+    
     return (
       <ul>{listItems}</ul>
     );
@@ -224,6 +225,95 @@ class List extends Component {
 
 }
 const numbers = [1,2,3,4,5];
+
+class Form extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      value:'',
+      textvalue: 'Please write an essay about React',
+      selectvalue: 'grapefruit',
+      selectedfile: false
+    };
+
+    this.handlefile=this.handlefile.bind(this);
+    this.handleselectchange = this.handleselectchange.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handletextchange = this.handletextchange.bind(this);
+  }
+
+  handleselectchange(event){
+    this.setState({selectvalue: event.target.value});
+  }
+
+  handletextchange(event){
+    this.setState({textvalue: event.target.value});
+  }
+
+  handleChange(event){
+    if(this.state.value===''){
+      this.setState({value: event.target.value.toUpperCase()});
+    }else{
+      this.setState({value: event.target.value});
+    }
+  }
+
+  handlefile(){
+    if(typeof this.fileInput.files[0].name !== 'undefined'){
+      this.setState({selectedfile: true});
+    }
+  }
+
+  handleSubmit(event){
+    alert(
+      'A name was submitted: ' + this.state.value + 
+      '\nFlavor selected: ' + this.state.selectvalue +
+      '\nTextarea: ' + this.state.textvalue + 
+      `\nSelected file: ${this.state.selectedfile ? this.fileInput.files[0].name:'None'}`
+    );
+    event.preventDefault();
+  }
+    
+  render(){
+    return(
+      <form onSubmit={this.handleSubmit}>
+        <p>
+          <label>
+          Name:
+          <input type='text' value={this.state.value} onChange={this.handleChange} />
+        </label>
+        </p>
+        <p>
+          <textarea value={this.state.textvalue} onChange={this.handletextchange} />
+        </p>
+        <p>
+          <label>
+            Upload file: 
+            <input type='file'
+              onChange={this.handlefile}
+              ref={
+                input =>
+                {
+                  this.fileInput = input;
+                }
+              } 
+            />
+          </label>
+        </p>
+        <p>
+          <select value={this.state.selectvalue} onChange={this.handleselectchange} >
+            <option value='coconut' >Coconut</option>
+            <option value='grapefruit' >Grapefruit</option>
+            <option value='mango' >Mango</option>
+            <option value='lime' >Lime</option>
+          </select>
+        </p>
+        <input type='submit' value='Submit' />
+      </form>
+    );
+  }
+}
 
 class App extends Component {
   render() {
@@ -241,6 +331,7 @@ class App extends Component {
         <LoginControl />
         <Page />
         <List numbers={numbers}/>
+        <Form />
       </div>
     );
   }
