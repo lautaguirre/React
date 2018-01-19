@@ -312,9 +312,9 @@ class Form extends Component {
             <option value='lime' >Lime</option>
           </select>
         </p>
-        <p>
+        <div>
           <Reserve />
-        </p>
+        </div>
         <input type='submit' value='Submit' />
       </form>
     );
@@ -344,7 +344,7 @@ class Reserve extends Component{
   
   render(){
     return(
-      <form>
+      <div>
         <label>
           Is going:
           <input 
@@ -363,7 +363,7 @@ class Reserve extends Component{
             onChange={this.handlereserve}
           />
         </label>
-      </form>
+      </div>
     );
   }
 }
@@ -453,7 +453,7 @@ class Calculator extends Component{
     ;
 
     return(
-      <p>
+      <div>
         <TemperatureInput
           scale='c'  
           temperature={celsius}
@@ -465,9 +465,9 @@ class Calculator extends Component{
           onTemperatureChange={this.handleFarenheitchange}
         />
         <BoilingVerdict 
-          celsius={celsius}
+          celsius={parseFloat(celsius)}
         />
-      </p>
+      </div>
     );
   }
 }
