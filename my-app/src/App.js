@@ -233,8 +233,9 @@ class Form extends Component {
       value:'',
       textvalue: 'Please write an essay about React',
       selectvalue: 'grapefruit',
-      selectedfile: false
     };
+    // eslint-disable-next-line
+    this.fileresponse='None';
 
     this.handlefile=this.handlefile.bind(this);
     this.handleselectchange = this.handleselectchange.bind(this);
@@ -259,9 +260,11 @@ class Form extends Component {
     }
   }
 
-  handlefile(){
-    if(typeof this.fileInput.files[0].name !== 'undefined'){
-      this.setState({selectedfile: true});
+  handlefile(event){
+    if(event.target.value !== ''){
+      this.fileresponse = this.fileInput.files[0].name;
+    }else{
+      this.fileresponse = 'None';
     }
   }
 
@@ -270,7 +273,7 @@ class Form extends Component {
       'A name was submitted: ' + this.state.value + 
       '\nFlavor selected: ' + this.state.selectvalue +
       '\nTextarea: ' + this.state.textvalue + 
-      `\nSelected file: ${this.state.selectedfile ? this.fileInput.files[0].name:'None'}`
+      `\nSelected file: ${this.fileresponse}`
     );
     event.preventDefault();
   }
@@ -309,8 +312,162 @@ class Form extends Component {
             <option value='lime' >Lime</option>
           </select>
         </p>
+        <p>
+          <Reserve />
+        </p>
         <input type='submit' value='Submit' />
       </form>
+    );
+  }
+}
+
+class Reserve extends Component{
+  constructor(props){
+    super(props);
+
+    this.state = {
+      isGoing: true,
+      numberOfGuests: 2
+    };
+
+    this.handlereserve=this.handlereserve.bind(this);
+  }
+
+  handlereserve(event){
+    const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
+    const name = event.target.name;
+
+    this.setState({
+      [name]: value
+    });
+  }
+  
+  render(){
+    return(
+      <form>
+        <label>
+          Is going:
+          <input 
+            name='isGoing'
+            type='checkbox'
+            checked={this.state.isGoing}
+            onChange={this.handlereserve}
+          />
+        </label>
+        <br />
+        <label>
+          <input 
+            name='numberOfGuests'
+            type='number'
+            value={this.state.numberOfGuests}
+            onChange={this.handlereserve}
+          />
+        </label>
+      </form>
+    );
+  }
+}
+
+class BoilingVerdict extends Component{
+  render(){
+    if(this.props.celsius >= 100){
+      return (<p>The water would boil.</p>);
+    }else{
+      return (<p>The water would not boil.</p>);
+    }
+  }
+}
+
+const scaleNames={
+  c:'Celsius',
+  f:'Farenheit'
+}
+function toCelsius(farenheit) {
+  return ((farenheit - 32) * 5/9);
+}
+function toFarenheit(celsius){
+  return ((celsius * (9/5)) + 32);
+}
+function tryConvert(temperature,convert){
+  const input=parseFloat(temperature);
+  if(Number.isNaN(input)){
+    return '';
+  }else{
+    const output=convert(input);
+    const rounded=Math.round(output*1000)/1000;
+    return rounded.toString();
+  }
+}
+class TemperatureInput extends Component {
+  constructor(props){
+    super(props);
+
+    this.handleChange=this.handleChange.bind(this);
+  }
+
+  handleChange(e){
+    this.props.onTemperatureChange(e.target.value);
+  }
+
+  render(){
+    return(
+      <fieldset>
+        <legend>Enter temperature in {scaleNames[this.props.scale]}: </legend>
+        <input 
+          value={this.props.temperature}
+          onChange={this.handleChange}   
+        />
+      </fieldset>
+    );
+  }
+}
+
+class Calculator extends Component{
+  constructor(props){
+    super(props);
+
+    this.state = {
+      temperature: '',
+      scale: 'c'
+    };
+
+    this.handleCelsiuschange = this.handleCelsiuschange.bind(this);
+    this.handleFarenheitchange = this.handleFarenheitchange.bind(this);
+  }
+
+  handleCelsiuschange(temperature){
+    this.setState({scale: 'c', temperature})
+  }
+  handleFarenheitchange(temperature){
+    this.setState({scale: 'f', temperature})
+  }
+
+  render(){
+    const celsius= this.state.scale==='f' ? 
+      tryConvert(this.state.temperature, toCelsius) :
+      this.state.temperature
+    ;
+    const farenheit= this.state.scale==='c' ?
+      tryConvert(this.state.temperature, toFarenheit) :
+      this.state.temperature
+    ;
+
+    return(
+      <p>
+        <TemperatureInput
+          scale='c'  
+          temperature={celsius}
+          onTemperatureChange={this.handleCelsiuschange}
+        />
+        <TemperatureInput 
+          scale='f' 
+          temperature={farenheit}
+          onTemperatureChange={this.handleFarenheitchange}
+        />
+        <BoilingVerdict 
+          celsius={celsius}
+        />
+      </p>
     );
   }
 }
@@ -331,7 +488,8 @@ class App extends Component {
         <LoginControl />
         <Page />
         <List numbers={numbers}/>
-        <Form />
+        <Form />        
+        <Calculator />
       </div>
     );
   }
