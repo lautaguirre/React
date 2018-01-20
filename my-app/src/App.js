@@ -233,31 +233,31 @@ class Form extends Component {
       value:'',
       textvalue: 'Please write an essay about React',
       selectvalue: 'grapefruit',
+      isGoing: true,
+      numberOfGuests: 2
     };
     // eslint-disable-next-line
     this.fileresponse='None';
-
+    
+    this.handleChange=this.handleChange.bind(this);
     this.handlefile=this.handlefile.bind(this);
     this.handleselectchange = this.handleselectchange.bind(this);
-    this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handletextchange = this.handletextchange.bind(this);
+    this.handleinputref = this.handleinputref.bind(this);
+    this.handlereserve=this.handlereserve.bind(this);
   }
 
-  handleselectchange(event){
-    this.setState({selectvalue: event.target.value});
+  handleChange(event){
+    this.setState({value: event.target.value});
   }
 
   handletextchange(event){
     this.setState({textvalue: event.target.value});
   }
 
-  handleChange(event){
-    if(this.state.value===''){
-      this.setState({value: event.target.value.toUpperCase()});
-    }else{
-      this.setState({value: event.target.value});
-    }
+  handleinputref(input){
+    this.fileInput = input;
   }
 
   handlefile(event){
@@ -268,80 +268,124 @@ class Form extends Component {
     }
   }
 
+  handleselectchange(event){
+    this.setState({selectvalue: event.target.value});
+  }
+
+  handlereserve(event){
+    const reservevalue = event.target.type === 'checkbox' ?
+      event.target.checked : 
+      event.target.value
+    ;
+    const reservename = event.target.name;
+
+    this.setState({
+      [reservename]: reservevalue
+    });
+  }
+
   handleSubmit(event){
+    event.preventDefault();
     alert(
       'A name was submitted: ' + this.state.value + 
       '\nFlavor selected: ' + this.state.selectvalue +
       '\nTextarea: ' + this.state.textvalue + 
-      `\nSelected file: ${this.fileresponse}`
+      `\nSelected file: ${this.fileresponse}` +
+      `\nNumber of guests: ${this.state.numberOfGuests}` +
+      `\nIs going?: ${this.state.isGoing ? 'Si':'No'}`
     );
-    event.preventDefault();
   }
     
   render(){
     return(
       <form onSubmit={this.handleSubmit}>
-        <p>
-          <label>
-          Name:
-          <input type='text' value={this.state.value} onChange={this.handleChange} />
-        </label>
-        </p>
-        <p>
-          <textarea value={this.state.textvalue} onChange={this.handletextchange} />
-        </p>
-        <p>
-          <label>
-            Upload file: 
-            <input type='file'
-              onChange={this.handlefile}
-              ref={
-                input =>
-                {
-                  this.fileInput = input;
-                }
-              } 
-            />
-          </label>
-        </p>
-        <p>
-          <select value={this.state.selectvalue} onChange={this.handleselectchange} >
-            <option value='coconut' >Coconut</option>
-            <option value='grapefruit' >Grapefruit</option>
-            <option value='mango' >Mango</option>
-            <option value='lime' >Lime</option>
-          </select>
-        </p>
-        <div>
-          <Reserve />
-        </div>
+        <NameInput
+          value={this.state.value} 
+          handleChange={this.handleChange} 
+        />
+        <TextInput
+          textvalue={this.state.textvalue} 
+          handletextchange={this.handletextchange} 
+        />
+        <FileInput
+          handlefile={this.handlefile} 
+          inputref={this.handleinputref} 
+        />
+        <SelectInput
+          selectvalue={this.state.selectvalue} 
+          handleselectchange={this.handleselectchange}
+        />
+        <Reserve
+          isGoing={this.state.isGoing}
+          numberOfGuests={this.state.numberOfGuests}
+          handlereserve={this.handlereserve}
+        />
         <input type='submit' value='Submit' />
       </form>
     );
   }
 }
 
+class NameInput extends Component{
+  render(){
+    return (
+      <p>
+        <label>
+          Name:
+          <input type='text' value={this.props.value} onChange={this.props.handleChange} />
+        </label>
+      </p>
+    );
+  }
+}
+
+class TextInput extends Component{
+  render(){
+    return(
+      <p>
+        <textarea value={this.props.textvalue} onChange={this.props.handletextchange} />
+      </p>
+    );
+  }
+}
+
+class FileInput extends Component{
+  render(){
+    return(
+      <p>
+        <label>
+          Upload file: 
+          <input type='file'
+            onChange={this.props.handlefile}
+            ref={
+              input =>
+              {
+                this.props.inputref(input);
+              }
+            } 
+          />
+        </label>
+      </p>
+    );
+  }
+}
+
+class SelectInput extends Component{
+  render(){
+    return(
+      <p>
+        <select value={this.props.selectvalue} onChange={this.props.handleselectchange} >
+          <option value='coconut' >Coconut</option>
+          <option value='grapefruit' >Grapefruit</option>
+          <option value='mango' >Mango</option>
+          <option value='lime' >Lime</option>
+        </select>
+      </p>
+    );
+  }
+}
+
 class Reserve extends Component{
-  constructor(props){
-    super(props);
-
-    this.state = {
-      isGoing: true,
-      numberOfGuests: 2
-    };
-
-    this.handlereserve=this.handlereserve.bind(this);
-  }
-
-  handlereserve(event){
-    const value = event.target.type === 'checkbox' ? event.target.checked : event.target.value;
-    const name = event.target.name;
-
-    this.setState({
-      [name]: value
-    });
-  }
-  
   render(){
     return(
       <div>
@@ -350,8 +394,8 @@ class Reserve extends Component{
           <input 
             name='isGoing'
             type='checkbox'
-            checked={this.state.isGoing}
-            onChange={this.handlereserve}
+            checked={this.props.isGoing}
+            onChange={this.props.handlereserve}
           />
         </label>
         <br />
@@ -359,8 +403,8 @@ class Reserve extends Component{
           <input 
             name='numberOfGuests'
             type='number'
-            value={this.state.numberOfGuests}
-            onChange={this.handlereserve}
+            value={this.props.numberOfGuests}
+            onChange={this.props.handlereserve}
           />
         </label>
       </div>
@@ -476,9 +520,7 @@ class Dialog extends Component{ //Composition
   render(){
     return(
       <div>
-        <h1>
-          {this.props.title}
-        </h1>
+        {this.props.title}
         <h4>
           {this.props.message}
         </h4>
