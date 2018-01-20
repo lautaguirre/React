@@ -472,6 +472,57 @@ class Calculator extends Component{
   }
 }
 
+class Dialog extends Component{ //Composition
+  render(){
+    return(
+      <div>
+        <h1>
+          {this.props.title}
+        </h1>
+        <h4>
+          {this.props.message}
+        </h4>
+        <p>
+          {this.props.children}
+        </p>
+      </div>
+    );
+  }
+}
+
+class SignUp extends Component{
+  constructor(props){
+    super(props);
+
+    this.state = {login: ''};
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSignUp = this.handleSignUp.bind(this);
+  }
+
+  handleChange(e){
+    this.setState({login: e.target.value});
+  }
+
+  handleSignUp(){
+    alert(`Welcome aboard ${this.state.login}`);
+  }
+
+  render(){
+    return(
+      <Dialog 
+        title={<Welcome name='cliente' />}
+        message='Ingrese su nombre'
+      >
+        <input type='text' value={this.state.login} onChange={this.handleChange} />
+        <button onClick={this.handleSignUp} >
+          Sign me up!
+        </button>
+      </Dialog>
+    );
+  }
+}
+
 class App extends Component {
   render() {
     return (
@@ -490,6 +541,7 @@ class App extends Component {
         <List numbers={numbers}/>
         <Form />        
         <Calculator />
+        <SignUp />
       </div>
     );
   }
