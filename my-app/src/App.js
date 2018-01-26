@@ -565,6 +565,159 @@ class SignUp extends Component{
   }
 }
 
+
+//Product table Practice
+const PRODUCTS = [
+  {category: 'Sporting Goods', price: '$49.99', stocked: true, name: 'Football'},
+  {category: 'Sporting Goods', price: '$9.99', stocked: true, name: 'Baseball'},
+  {category: 'Sporting Goods', price: '$29.99', stocked: false, name: 'Basketball'},
+  {category: 'Electronics', price: '$99.99', stocked: true, name: 'iPod Touch'},
+  {category: 'Electronics', price: '$399.99', stocked: false, name: 'iPhone 5'},
+  {category: 'Electronics', price: '$199.99', stocked: true, name: 'Nexus 7'}
+];
+
+class ProductTable extends Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      checkboxState: false,
+      filterText:''
+    };
+
+    this.handleFilterText = this.handleFilterText.bind(this);
+    this.handleCheckbox = this.handleCheckbox.bind(this);
+  }
+
+  handleFilterText(filteredText){
+    this.setState({filterText: filteredText});
+  }
+
+  handleCheckbox(checkbox){
+    this.setState({checkboxState: checkbox})
+  }
+
+  render(){
+    return(
+    <p>
+      <h1>Products table</h1>
+      <SearchBar 
+        searchValue={this.state.filterText} 
+        checkboxValue={this.state.checkboxState} 
+        onFilterChange={this.handleFilterText}
+        onCheckboxChange={this.handleCheckbox}
+      />
+      <TableData 
+        data={this.props.data}
+        searchValue={this.state.filterText} 
+        checkboxValue={this.state.checkboxState}
+      />
+    </p>
+    );
+  }
+}
+
+class SearchBar extends Component{
+  constructor(props){
+    super(props);
+
+    this.textFilterHandler = this.textFilterHandler.bind(this);
+    this.checkboxHandler = this.checkboxHandler.bind(this);
+  }
+
+  textFilterHandler(e){
+    this.props.onFilterChange(e.target.value);
+  }
+
+  checkboxHandler(e){
+    this.props.onCheckboxChange(e.target.checked);
+  }
+
+  render(){
+    return(
+    <p>
+      <input type='text' 
+        value={this.props.searchValue} 
+        placeholder='Search...'
+        onChange={this.textFilterHandler}
+      />
+      <br/>
+      <input type='checkbox'
+        checked={this.props.checkboxValue}
+        onChange={this.checkboxHandler}
+      /> 
+      Only on stock
+    </p>
+    );
+  }
+}
+
+class TableData extends Component{
+  render(){
+
+    const rows=[];
+    let lastCategory='';
+
+    this.props.data.forEach(element => {
+      if(element.name.indexOf(this.props.searchValue) === -1){
+        return;
+      }
+      if(this.props.checkboxValue && !element.stocked){
+        return;
+      }
+      if(element.category !== lastCategory){
+        rows.push(
+          <CategoryRow name={element.category} />
+        );
+      }
+      rows.push(
+        <ProductRow data={element} />
+      );
+      lastCategory = element.category;
+    });
+
+    return(
+      <table align='center'>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody>{rows}</tbody>
+      </table>
+    );
+  }
+}
+
+class CategoryRow extends Component{
+  render(){
+    return(
+      <tr>
+        <th colSpan="2">
+          {this.props.name}
+        </th>
+      </tr>
+    );
+  }
+}
+
+class ProductRow extends Component{
+  render(){
+    const name = this.props.data.stocked ?
+      this.props.data.name : 
+      <span style={{color: 'red'}}>
+        {this.props.data.name}
+      </span>
+    ;
+    return(
+      <tr>
+        <td>{name}</td>
+        <td>{this.props.data.price}</td>
+      </tr>
+    );
+  }
+}
+
 class App extends Component {
   render() {
     return (
@@ -584,6 +737,7 @@ class App extends Component {
         <Form />        
         <Calculator />
         <SignUp />
+        <ProductTable data={PRODUCTS} />
       </div>
     );
   }
