@@ -598,7 +598,7 @@ class ProductTable extends Component{
 
   render(){
     return(
-    <p>
+    <div>
       <h1>Products table</h1>
       <SearchBar 
         searchValue={this.state.filterText} 
@@ -611,7 +611,7 @@ class ProductTable extends Component{
         searchValue={this.state.filterText} 
         checkboxValue={this.state.checkboxState}
       />
-    </p>
+    </div>
     );
   }
 }
@@ -666,11 +666,11 @@ class TableData extends Component{
       }
       if(element.category !== lastCategory){
         rows.push(
-          <CategoryRow name={element.category} />
+          <CategoryRow key={element.category} name={element.category} />
         );
       }
       rows.push(
-        <ProductRow data={element} />
+        <ProductRow key={element.name} data={element} />
       );
       lastCategory = element.category;
     });
@@ -734,7 +734,9 @@ class App extends Component {
         <LoginControl />
         <Page />
         <List numbers={numbers}/>
-        <Form />        
+        <fieldset>
+          <Form />        
+        </fieldset>
         <Calculator />
         <SignUp />
         <ProductTable data={PRODUCTS} />
