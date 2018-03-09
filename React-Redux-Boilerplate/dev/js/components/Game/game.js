@@ -15,6 +15,10 @@ class Game extends Component {
       this.calculateWinner = this.calculateWinner.bind(this);
     }
 
+    static propTypes = {
+      gameState: PropTypes.object.isRequired
+    }
+
     componentDidMount(){
       store.dispatch(START({
         history: [{
@@ -109,10 +113,6 @@ class Game extends Component {
         </div>
       );
     }
-}
-
-Game.propTypes = {
-  gameState: PropTypes.object
 }
 
 export default Game;
