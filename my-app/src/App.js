@@ -558,7 +558,7 @@ class SignUp extends Component{
       >
         <input type='text' value={this.state.login} onChange={this.handleChange} />
         <button onClick={this.handleSignUp} >
-          Sign me up!
+          Sign me up!!
         </button>
       </Dialog>
     );
